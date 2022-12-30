@@ -61,6 +61,7 @@ namespace NZWalks.API.Repositories
                 existingWalk.Name = walk.Name;
                 existingWalk.WalkDifficultyId = walk.WalkDifficultyId;
                 existingWalk.RegionId = walk.RegionId;
+                await nZWalksDbContext.SaveChangesAsync();
                 return existingWalk;
             }
             return null;
