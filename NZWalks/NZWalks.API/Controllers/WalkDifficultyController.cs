@@ -45,6 +45,11 @@ namespace NZWalks.API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddWalkDifficulty(WalkDifficultyRequest walkDifficultyRequest)
         {
+            if (!ValidateWalkDifficulty(walkDifficultyRequest))
+            {
+                return BadRequest(ModelState);
+            }
+
             var walkDifficulty = mapper.Map<Models.Domains.WalkDifficulty>(walkDifficultyRequest);
 
             walkDifficulty = await walkDifficultyRepository.AddAsync(walkDifficulty);
@@ -57,6 +62,11 @@ namespace NZWalks.API.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateWalkDifficulty(Guid id, WalkDifficultyRequest walkDifficultyRequest)
         {
+            if (!ValidateWalkDifficulty(walkDifficultyRequest))
+            {
+                return BadRequest(ModelState);
+            }
+
             var walkDifficulty = mapper.Map<Models.Domains.WalkDifficulty>(walkDifficultyRequest);
 
             walkDifficulty = await walkDifficultyRepository.UpdateAsync(id, walkDifficulty);
@@ -86,5 +96,29 @@ namespace NZWalks.API.Controllers
 
             return Ok(walkDifficultyDTO);
         }
+
+        #region private methods
+        private bool ValidateWalkDifficulty(WalkDifficultyRequest walkDifficultyRequest)
+        {
+            if (walkDifficultyRepository == null)
+            {
+                ModelState.AddModelError(nameof(walkDifficultyRequest), $"is required.");
+                return false;   
+            }
+
+            if (string.IsNullOrWhiteSpace(walkDifficultyRequest.Code))
+            {
+                ModelState.AddModelError(nameof(walkDifficultyRequest.Code), $"{nameof(walkDifficultyRequest.Code)} cannot be null or empty.");
+            }
+
+            if (ModelState.ErrorCount > 0)
+            {
+                return false;
+            }
+
+            return true;
+
+        }
+        #endregion
     }
 }
